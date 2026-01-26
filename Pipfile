@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+python-dotenv = "*"
+imapclient = "*"
+html2text = "*"
+pytest = "*"
+openpyxl = "*"
+openai = "*"
+sphinx-autodoc-typehints = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
