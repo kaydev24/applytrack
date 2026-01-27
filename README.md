@@ -134,5 +134,3 @@ This project is provided without warranty.
 The author assumes no liability for misuse or unlawful use.
 
 ---
-
-© 2026 kaydev24. All rights reserved.

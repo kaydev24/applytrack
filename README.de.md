@@ -134,5 +134,3 @@ Dieses Projekt wird ohne Garantie bereitgestellt.
 Der Autor übernimmt keine Haftung für missbräuchliche oder rechtswidrige Nutzung.
 
 ---
-
-© 2026 kaydev24. Alle rechte vorbehalten.
