@@ -18,7 +18,7 @@ applytrack supports the automated tracking of application processes by:
 
 ---
 
-## What Problem Is Solved?
+## What Problem Is Solved with using AI?
 
 Application emails are highly inconsistent in:
 

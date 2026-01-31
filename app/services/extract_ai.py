@@ -55,7 +55,7 @@ SCHEMA: Dict[str, Any] = {
 def ask_ollama(email_text: str) -> str:
     """
     Send email text to the Ollama endpoint and return the raw JSON response.
-    Raises RuntimeError if env vars are missing or the model returns no content.
+    Raises ValueError if env vars are missing or the model returns no content.
     """
     base_url = os.getenv("OLLAMA_BASE_URL")
     api_key = os.getenv("OLLAMA_API_KEY")

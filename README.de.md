@@ -18,7 +18,7 @@ applytrack unterstützt die automatisierte Nachverfolgung von Bewerbungsprozesse
 
 ---
 
-## Welches Problem wird gelöst?
+## Welches Problem wird durch die Nutzung von AI gelöst?
 
 Bewerbungs-E-Mails sind stark uneinheitlich in:
 
