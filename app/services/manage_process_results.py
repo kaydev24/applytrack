@@ -145,13 +145,16 @@ def dedupe_and_merge_results(results: List[Dict[str, Any]], include_role_in_key:
 
         merged.append(output)
 
-    def sort_key(entry: Dict[str, Any]) -> Tuple[int, datetime]:
+    def sort_key(entry):
         value = clean_str(entry.get(R.FIRST_CONTACT_DATE))
+
         if value is not None:
             try:
-                return 0, datetime.strptime(value, R.DATE_FORMAT)
+                parsed_dt = datetime.strptime(value, R.DATE_FORMAT)
+                return (0, parsed_dt)
             except ValueError:
                 pass
+
         return (1, datetime.min)
 
     merged.sort(key=sort_key)

@@ -5,15 +5,6 @@ from typing import Any, Dict, Optional
 from openai import OpenAI
 import app.constants.result_fields as R
 
-base_url = os.getenv("OLLAMA_BASE_URL")
-api_key = os.getenv("OLLAMA_API_KEY")
-model = os.getenv("OLLAMA_MODEL")
-
-if not base_url or not api_key or not model:
-    raise RuntimeError("Missing Ollama env vars")
-
-client = OpenAI(base_url=base_url, api_key=api_key)
-
 
 SYSTEM_PROMPT = """
 You extract structured data from job application emails.
@@ -42,6 +33,7 @@ ergebnis (result):
 -Zwischenstand = all other cases
 """.strip()
 
+
 SCHEMA: Dict[str, Any] = {
     "name": "bewerbung_extraction",
     "strict": True,
@@ -59,11 +51,21 @@ SCHEMA: Dict[str, Any] = {
     },
 }
 
+
 def ask_ollama(email_text: str) -> str:
     """
-    Send email text to the Ollama/OpenAI endpoint and return the raw JSON response.
+    Send email text to the Ollama endpoint and return the raw JSON response.
     Raises RuntimeError if env vars are missing or the model returns no content.
     """
+    base_url = os.getenv("OLLAMA_BASE_URL")
+    api_key = os.getenv("OLLAMA_API_KEY")
+    model = os.getenv("OLLAMA_MODEL")
+
+    if not base_url or not api_key or not model:
+        raise ValueError("Missing Ollama env vars")
+
+    client = OpenAI(base_url=base_url, api_key=api_key)
+
     resp = client.chat.completions.create(
         model=model,
         temperature=0.0,
@@ -80,32 +82,10 @@ def ask_ollama(email_text: str) -> str:
 
     return content
 
+
 def parse_llm_json(raw: Optional[str]) -> Dict[str, Any]:
     """
     Parses the raw JSON string from the model into a Python dict and ensures keys exist.
-
-    Inputs:
-    -raw: JSON string returned by ask_ollama()
-
-    Output:
-    -parsed dict
-
-    Flow:
-    1)Validate raw is not empty
-    2)json.loads(raw) -> dict
-    3)Ensure keys that might be missing exist:
-       -"gespraechspartner" -> None if missing
-       -"anschrift" -> None if missing
-
-    Example:
-    raw = '{"arbeitgeber_name":"ABC GmbH","beworben_als":"Dev","ergebnis":"Zwischenstand"}'
-    -> {
-         "arbeitgeber_name": "ABC GmbH",
-         "beworben_als": "Dev",
-         "ergebnis": "Zwischenstand",
-         "gespraechspartner": None,
-         "anschrift": None
-       }
     """
     if raw is None or not raw.strip():
         raise ValueError("Model returned empty output")
@@ -119,24 +99,15 @@ def parse_llm_json(raw: Optional[str]) -> Dict[str, Any]:
 
     return parsed
 
-def extract_fields_from_email(email_text: str, subject_for_log: str, received_datetime: Optional[datetime] = None) -> Dict[str, Any]:
+
+def extract_fields_from_email(
+    email_text: str,
+    subject_for_log: str,
+    received_datetime: Optional[datetime] = None,
+) -> Dict[str, Any]:
     """
     High-level wrapper: calls the LLM, parses the output, maps keys,
     and attaches received_datetime directly.
-
-    Output (success):
-    {
-      "employer_name": ...,
-      "contact_person": ...,
-      "applied_position": ...,
-      "postal_address": ...,
-      "result": ...,
-      "received_datetime": ...,
-      "status": "ok"
-    }
-
-    Output (failure):
-    Same keys, all None except status="llm_failed"
     """
 
     try:
@@ -166,37 +137,10 @@ def extract_fields_from_email(email_text: str, subject_for_log: str, received_da
             "status": "llm_failed",
         }
 
+
 def format_email(sender: str, subject: str, msg_date: str, body: str) -> str:
     """
     Builds the exact text that is sent to the LLM.
-
-    Inputs:
-    -sender: decoded From header
-    -subject: decoded Subject header
-    -msg_date: decoded Date header
-    -body: extracted plain text email body
-
-    Output:
-    -One string containing:
-      From: ...
-      Subject: ...
-      Date: ...
-
-      <body>
-
-    Example:
-    email_text = format_email(
-        sender="ABC HR <hr@abc.com>",
-        subject="Your application",
-        msg_date="Mon, 6 Jan 2026 09:00:00 +0100",
-        body="Hello...\\nRegards..."
-    )
-
-    email_text becomes:
-    "From: ABC HR <hr@abc.com>\\n"
-    "Subject: Your application\\n"
-    "Date: Mon, 6 Jan 2026 09:00:00 +0100\\n\\n"
-    "Hello...\\nRegards..."
     """
     return (
         "From: " + sender + "\n"

@@ -14,15 +14,12 @@ def load_login_config() -> MailProviderConfig:
     user = os.getenv("IMAP_USER")
     password = os.getenv("IMAP_PASS")
 
-    missing = []
     if not host:
-        missing.append("IMAP_HOST")
+        raise ValueError("Missing env var: IMAP_HOST")
     if not user:
-        missing.append("IMAP_USER")
+        raise ValueError("Missing env var: IMAP_USER")
     if not password:
-        missing.append("IMAP_PASS")
-    if missing:
-        raise RuntimeError("Missing env vars: " + ", ".join(missing))
+        raise ValueError("Missing env var: IMAP_PASS")
 
     return MailProviderConfig(host=host, user=user, password=password)
 

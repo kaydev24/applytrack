@@ -1,16 +1,14 @@
 import os
 from typing import Any, Dict, List
 from datetime import date
-
 from dotenv import load_dotenv
-load_dotenv()
-
 from app.services.address_resolver import load_address_resolver
 from app.services.enrich_addresses import enrich_missing_addresses
 from app.services.extract_ai import extract_fields_from_email, format_email
 from app.services.fetch_email import fetch_mails, load_login_config
 from app.services.export_to_table import write_results_to_excels
 from app.services.manage_process_results import dedupe_and_merge_results
+load_dotenv()
 
 search_terms = ["bewerbung", "application"]
 since_date = date(2026, 1, 5)
